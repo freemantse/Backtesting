@@ -1,11 +1,21 @@
 # Six-Cycle Multi-Asset ETF Rotation — US-Market Analog: Backtest Report
-*Generated 2026-06-16 · backtest window 2016-06-01 → 2025-12-31 · rebalance M · prices: tiingo · macro: fred · growth signal: indpro*
+*Generated 2026-06-16 · backtest window 2016-06-01 → 2025-12-31 · rebalance Monthly · prices: Tiingo · macro: FRED · growth signal: INDPRO (Industrial Production)*
 > **What this is.** A faithful-in-*structure* reproduction of the Guosheng Securities “Six-Cycle Framework” multi-asset ETF rotation paper, rebuilt on **US ETFs** with a **point-in-time** macro classifier from free FRED data. It is a transferability test — *does the idea travel to US markets?* — not an attempt to reproduce the literal China numbers.
 
-> **Data provenance:** live fetch — prices: tiingo, macro: fred.
+> **Data provenance:** live fetch — prices: Tiingo, macro: FRED.
 
 ## Executive summary
-The paper reports an in-sample Sharpe near **2.0** for its main rotation strategy. A prior reproduction (AxiomQ) collapsed that to **0.48** — but through three *mechanical* failures (wrong substitute assets, a missing gold leg, and a hand-typed hindsight regime timeline), not a refutation of the method. This build fixes all three and asks where the honest, out-of-sample-style number lands.
+### In plain terms
+The economy moves through a repeating cycle of phases — money loosens, then credit expands, then growth picks up, and later the reverse. The source paper's idea is simple: **work out which of six phases the economy is in right now, then hold the assets that have historically done best in that phase**, and re-check every month. This report re-tests that idea on real **US ETFs** (stocks by style, gold, commodities, long-term Treasuries), using a **leak-free** classifier that only ever looks at macro data that was actually known at the time.
+
+**The four strategies tested** (all on the same six-phase engine):
+- **S1 Style Rotation** — rotate the *equity style* (Growth / Quality / Value) by phase.
+- **S2 All-Weather** — hold *every* phase's basket at once, no timing (a control).
+- **S3 Six-Cycle Rotation** — the *main* strategy: hold only the current phase's basket.
+- **S4 Rotation + Target-Vol** — S3 dialled to a low, steady volatility target.
+
+### The result in context
+The paper reports an in-sample Sharpe near **2.0** for its main rotation strategy. A prior reproduction (AxiomQ) collapsed that to **0.48** — but through three *mechanical* failures (wrong substitute assets, a missing gold leg, and a hand-typed hindsight regime timeline), not a refutation of the method. This build fixes all three and asks where the honest, out-of-sample-style number lands — expected **below** the paper's flattered ~2.0 but **above** AxiomQ's 0.48.
 
 **Headline results (this run):**
 | Strategy | CAGR | AnnVol | Sharpe | MaxDD | Calmar | AnnTurnover | WinRate_vs_EW | WinRate_vs_SPY |
@@ -14,11 +24,17 @@ The paper reports an in-sample Sharpe near **2.0** for its main rotation strateg
 | S2 All-Weather | 9.8% | 9.6% | 0.78 | -21.4% | 0.46 | 0.65 | 40.4% | 40.4% |
 | S3 Rotation | 7.2% | 13.0% | 0.43 | -31.8% | 0.23 | 3.57 | 41.2% | 42.1% |
 | S4 Target-Vol | 3.7% | 3.9% | 0.36 | -9.6% | 0.39 | 1.59 | 39.5% | 35.1% |
-| EW Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
+| Equal-Weight (EW) Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
 | SPY (Buy & Hold) | 15.1% | 18.1% | 0.74 | -33.7% | 0.45 | 0.10 | 58.8% | 0.0% |
 
 
-The equity curves, drawdowns, the live regime timeline and the macro signal inputs are shown in [Part IV](#part-iv--results). The interpretation — why these land between AxiomQ's 0.48 and the paper's ~2.0 — is in [Part V](#part-v--interpretation).
+### What's in this report
+- **[Part I](#part-i--the-source-paper-six-cycle-framework)** — the source paper: the six-phase idea, its macro signals, and the four strategies.
+- **[Part II](#part-ii--the-prior-reproduction-axiomq-and-why-it-underperformed)** — the prior attempt (AxiomQ) and the three mistakes that sank it.
+- **[Part III](#part-iii--this-backtest-setup-purpose--choices)** — how this backtest is built: data, assets, *how a phase is decided from the macro data*, and mechanics.
+- **[Part IV](#part-iv--results)** — results: equity curves, drawdowns, regime timeline, and metrics.
+- **[Part V](#part-v--interpretation)** — interpretation: why the number lands where it does, plus honest caveats.
+- **[Part VI](#part-vi--reproducibility)** — how to reproduce the run.
 
 ---
 
@@ -83,7 +99,7 @@ AxiomQ attempted the China strategy but **lacked the required data**, so it ran 
 **AxiomQ results:**
 | Strategy | AnnReturn | Sharpe | MaxDD |
 |---|---|---|---|
-| EW Benchmark | 6.09% | 0.42 | -42.74% |
+| Equal-Weight (EW) Benchmark | 6.09% | 0.42 | -42.74% |
 | S1 All-Weather | 6.08% | 0.51 | -28.26% |
 | S2 Rotation (net) | 5.77% | 0.48 | -29.53% |
 | S3 Target-Vol | 1.64% | 0.52 | -10.97% |
@@ -110,9 +126,9 @@ Test whether the Six-Cycle *idea* transfers to US markets, with an honest, point
 | Hand-typed hindsight timeline | **Live, point-in-time** classifier from FRED with publication lags |
 
 ### Data stack
-- **ETF prices → tiingo** (adjusted close; survivorship-aware free EOD). Stooq available as a free cross-check.
-- **Macro → fred** (FRED). Point-in-time via ALFRED vintages when a key is present; otherwise the latest-revision series with a fixed publication lag of **21 days** applied so the classifier never peeks.
-- **Growth signal → indpro** (PMI is proprietary and not freely bulk-downloadable; we use a free FRED proxy — this materially affects the growth leg and is a documented choice).
+- **ETF prices → Tiingo** (adjusted close; survivorship-aware free EOD). Stooq available as a free cross-check.
+- **Macro → FRED**. Point-in-time via ALFRED vintages when a key is present; otherwise the latest-revision series with a fixed publication lag of **21 days** applied so the classifier never peeks.
+- **Growth signal → INDPRO (Industrial Production)** (PMI is proprietary and not freely bulk-downloadable; we use a free FRED proxy — this materially affects the growth leg and is a documented choice).
 
 ### Asset / equity choices (US analog)
 | Leg | Paper instrument | US ETF used | Role |
@@ -125,8 +141,23 @@ Test whether the Six-Cycle *idea* transfers to US markets, with an honest, point
 | 30Y Bond | 30Y Treasury | **TLT** | Defensive ballast, stages 4–6 |
 | Benchmark | CSI 800 | **SPY** | Broad-market reference |
 
+### How a phase is decided from the macro data
+Every month-end, the raw macro series are turned into a single phase label through a fixed six-step pipeline. Nothing is hand-set — the label falls out of the data:
+
+1. **Collect the raw monthly series from FRED** (resampled to month-end): the 3-month T-bill rate `DGS3MO`, commercial & industrial loans `BUSLOANS`, the high-yield credit spread `BAMLH0A0HYM2` (a tie-breaker), and industrial production `INDPRO` (or `CFNAI`).
+2. **Turn each into a momentum metric** — we care about *direction of change*, not level:
+   - **Money** = −(3-month change in the T-bill rate). A *falling* rate means policy is loosening.
+   - **Credit** = the “loan pulse” = the 3-month change in `BUSLOANS` year-over-year growth. *Accelerating* lending means credit is expanding.
+   - **Growth** = the 3-month change in `INDPRO` YoY growth (i.e. acceleration), or a 3-month average of `CFNAI`. *Speeding up* means growth is improving.
+3. **Reduce each metric to a +1 / −1 vote** with a **deadband + hysteresis**: clearly above zero → **+1**, clearly below → **−1**, but inside a small dead zone the metric is treated as noise and the *previous* vote is held (this stops the label flickering on tiny wiggles). For Credit, a too-small loan pulse is broken by the high-yield spread — a *falling* spread votes expansion (+1).
+4. **Map the three votes → one of six phases.** The triple `(Money, Credit, Growth)` has eight possible sign combinations; the 8→6 table below assigns each to a phase, following the classic **money → credit → growth lead-lag chain** (policy turns first, lending follows, real growth last). Six combinations are the canonical clock; the remaining two (where credit lags) fold into the nearest phase. *The paper omits this table, so it is our documented assumption.*
+5. **(Optional) clock smoothing:** when enabled, the phase may only advance to the same or the next clockwise phase, never jump — a further whipsaw guard.
+6. **Make it leak-free (point-in-time):** each month-end label is only made available **21 days later** (the publication lag) and then carried forward onto trading days — so the phase used on any given day relies only on data that was actually published by then.
+
+*Worked example.* Suppose in a given month the T-bill rate is falling (**Money = +1**), loan growth is accelerating (**Credit = +1**), but industrial production is still contracting (**Growth = −1**). The triple `(+1, +1, −1)` maps to **Phase 1 — Credit Expansion**, so that month holds the Phase-1 basket. The live path of these votes and the resulting phases over the whole test window is plotted in [Part IV](#part-iv--results) (*Macro signal inputs* and *Regime timeline*).
+
 ### The classifier — signals & the 8→6 mapping (DOCUMENTED ASSUMPTION)
-Each dimension is reduced to +1/−1 with a small deadband + hysteresis to suppress whipsaw:
+In precise terms, each dimension is reduced to +1/−1 with a small deadband + hysteresis to suppress whipsaw:
 - **Money** = sign of the *fall* in the 3-month T-bill (`DGS3MO`) over 3 months (falling = loose).
 - **Credit** = sign of the 3-month change in `BUSLOANS` YoY growth (loan pulse); ties broken by the direction of the HY OAS (`BAMLH0A0HYM2`, falling spread = expansion).
 - **Growth** = sign of the 3-month change in `INDPRO` YoY (acceleration), or the sign of a 3-month CFNAI average.
@@ -155,7 +186,7 @@ The paper does **not** publish the table that maps the eight (money, credit, gro
 | 6 Monetary Expansion | value=SCHD, bond=TLT, gold=GLD |
 
 ### Backtest mechanics
-- **Rebalance:** M (last trading day of each period), effective the **next** trading day (1-day execution lag → leakage-free).
+- **Rebalance:** Monthly (last trading day of each period), effective the **next** trading day (1-day execution lag → leakage-free).
 - **Within-stage weighting:** inverse-volatility risk parity over a 60-day lookback; legs with too little history are excluded and the rest renormalised (never zero-filled).
 - **Target-vol (S4):** leverage = clip(3% / trailing annualised vol, 0, 3); residual cash earns the 3-month T-bill rate.
 - **Costs:** 1bp commission + 2bp slippage, no stamp duty. **Annualisation:** 252.
@@ -186,7 +217,7 @@ The paper does **not** publish the table that maps the eight (money, credit, gro
 | S2 All-Weather | 9.8% | 9.6% | 0.78 | -21.4% | 0.46 | 0.65 | 40.4% | 40.4% |
 | S3 Rotation | 7.2% | 13.0% | 0.43 | -31.8% | 0.23 | 3.57 | 41.2% | 42.1% |
 | S4 Target-Vol | 3.7% | 3.9% | 0.36 | -9.6% | 0.39 | 1.59 | 39.5% | 35.1% |
-| EW Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
+| Equal-Weight (EW) Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
 | SPY (Buy & Hold) | 15.1% | 18.1% | 0.74 | -33.7% | 0.45 | 0.10 | 58.8% | 0.0% |
 
 

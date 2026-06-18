@@ -24,7 +24,7 @@ The paper reports an in-sample Sharpe near **2.0** for its main rotation strateg
 | S2 All-Weather | 9.8% | 9.6% | 0.78 | -21.4% | 0.46 | 0.65 | 40.4% | 40.4% |
 | S3 Rotation | 7.2% | 13.0% | 0.43 | -31.8% | 0.23 | 3.57 | 41.2% | 42.1% |
 | S4 Target-Vol | 3.7% | 3.9% | 0.36 | -9.6% | 0.39 | 1.59 | 39.5% | 35.1% |
-| EW Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
+| Equal-Weight (EW) Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
 | SPY (Buy & Hold) | 15.1% | 18.1% | 0.74 | -33.7% | 0.45 | 0.10 | 58.8% | 0.0% |
 
 
@@ -99,7 +99,7 @@ AxiomQ attempted the China strategy but **lacked the required data**, so it ran 
 **AxiomQ results:**
 | Strategy | AnnReturn | Sharpe | MaxDD |
 |---|---|---|---|
-| EW Benchmark | 6.09% | 0.42 | -42.74% |
+| Equal-Weight (EW) Benchmark | 6.09% | 0.42 | -42.74% |
 | S1 All-Weather | 6.08% | 0.51 | -28.26% |
 | S2 Rotation (net) | 5.77% | 0.48 | -29.53% |
 | S3 Target-Vol | 1.64% | 0.52 | -10.97% |
@@ -217,7 +217,7 @@ The paper does **not** publish the table that maps the eight (money, credit, gro
 | S2 All-Weather | 9.8% | 9.6% | 0.78 | -21.4% | 0.46 | 0.65 | 40.4% | 40.4% |
 | S3 Rotation | 7.2% | 13.0% | 0.43 | -31.8% | 0.23 | 3.57 | 41.2% | 42.1% |
 | S4 Target-Vol | 3.7% | 3.9% | 0.36 | -9.6% | 0.39 | 1.59 | 39.5% | 35.1% |
-| EW Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
+| Equal-Weight (EW) Benchmark | 11.0% | 11.0% | 0.80 | -21.7% | 0.51 | 0.26 | 0.0% | 41.2% |
 | SPY (Buy & Hold) | 15.1% | 18.1% | 0.74 | -33.7% | 0.45 | 0.10 | 58.8% | 0.0% |
 
 

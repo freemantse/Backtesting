@@ -181,7 +181,7 @@
       "s2_allweather": "S2 All-Weather",
       "s3_rotation": "S3 Rotation",
       "s4_targetvol": "S4 Target-Vol",
-      "ew": "EW Benchmark",
+      "ew": "Equal-Weight (EW) Benchmark",
       "spy": "SPY (Buy & Hold)"
     },
     "regime_mix": "S1 13%, S2 21%, S3 14%, S4 16%, S5 24%, S6 12%",

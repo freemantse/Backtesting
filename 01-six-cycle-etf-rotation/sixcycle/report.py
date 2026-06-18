@@ -32,7 +32,7 @@ AXIOMQ_TABLE = pd.DataFrame(
         "Sharpe": [0.42, 0.51, 0.48, 0.52],
         "MaxDD": ["-42.74%", "-28.26%", "-29.53%", "-10.97%"],
     },
-    index=["EW Benchmark", "S1 All-Weather", "S2 Rotation (net)", "S3 Target-Vol"],
+    index=["Equal-Weight (EW) Benchmark", "S1 All-Weather", "S2 Rotation (net)", "S3 Target-Vol"],
 )
 
 

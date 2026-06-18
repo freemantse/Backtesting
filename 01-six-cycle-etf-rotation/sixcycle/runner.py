@@ -33,7 +33,7 @@ DISPLAY = {
     "s2_allweather": "S2 All-Weather",
     "s3_rotation": "S3 Rotation",
     "s4_targetvol": "S4 Target-Vol",
-    "ew": "EW Benchmark",
+    "ew": "Equal-Weight (EW) Benchmark",
 }
 
 
