@@ -178,12 +178,12 @@ The paper does **not** publish the table that maps the eight (money, credit, gro
 ### Stage → basket (US ETFs used here)
 | Stage | Basket (legs → ETFs) |
 |---|---|
-| 1 Credit Expansion |  |
-| 2 Economic Recovery |  |
-| 3 Monetary Retreat |  |
-| 4 Credit Retreat |  |
-| 5 Economic Slowdown |  |
-| 6 Monetary Expansion |  |
+| 1 Credit Expansion | growth=QQQ, gold=GLD |
+| 2 Economic Recovery | growth=QQQ, commodity=DBB |
+| 3 Monetary Retreat | quality=COWZ, commodity=DBB |
+| 4 Credit Retreat | quality=COWZ, bond=TLT, commodity=DBB |
+| 5 Economic Slowdown | value=SCHD, bond=TLT, gold=GLD |
+| 6 Monetary Expansion | value=SCHD, bond=TLT, gold=GLD |
 
 ### Backtest mechanics
 - **Rebalance:** Monthly (last trading day of each period), effective the **next** trading day (1-day execution lag → leakage-free).

@@ -16,7 +16,7 @@ page.
 
 | # | Strategy | Idea in one line | Report | Status |
 |---|----------|------------------|--------|--------|
-| 1 | **Six-Cycle ETF Rotation** | Rotate U.S. ETFs based on which phase the economy is in | [Read the report »](01-six-cycle-etf-rotation/REPORT.md) | ✅ Done |
+| 1 | **Six-Cycle ETF Rotation** | Rotate U.S. ETFs based on which phase the economy is in | [Read the report](01-six-cycle-etf-rotation/REPORT.md) | ✅ Done |
 
 > *(One row is added here per strategy. The Report link is always the fastest way to the right place.)*
 
@@ -32,7 +32,7 @@ Every report follows the same shape, so once you've read one you can read them a
 4. **Caveats** (near the end) — the honest limitations. Always worth reading before drawing
    conclusions. These are research/education tests, **not** investment advice.
 
-## Want to run it yourself? (optional)
+## Want to run it yourself?
 
 Reading the report is enough — but if you'd like to reproduce the results on your own computer,
 here's the beginner-friendly path. (Mac/Windows/Linux all work.)

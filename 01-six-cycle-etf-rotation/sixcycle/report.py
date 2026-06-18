@@ -7,6 +7,7 @@ and diagrams. Callable in-memory from `run`, or rebuilt from a run directory.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -310,7 +311,9 @@ def build_report(info: dict, metrics: pd.DataFrame, images: dict[str, str],
     baskets = info["stage_baskets"]
     A("| Stage | Basket (legs → ETFs) |\n|---|---|\n")
     for st in range(1, 7):
-        legs = baskets.get(st, [])
+        # baskets may be keyed by int (in-process) or by str (JSON round-trip
+        # via run_config.json on the `report --run-dir` path) — accept both.
+        legs = baskets.get(st) or baskets.get(str(st), [])
         etfs = ", ".join(f"{l}={uni.get(l,'?')}" for l in legs)
         A(f"| {st} {STAGE_NAMES[st]} | {etfs} |\n")
 
@@ -403,10 +406,14 @@ def rebuild_from_run_dir(run_dir: Path, out_path: Path) -> Path:
             manifest = pd.read_csv(mpath).to_dict("records")
         except pd.errors.EmptyDataError:
             manifest = []  # clamp mode writes an empty manifest
+    # Emit image links relative to the report's own location so they resolve
+    # both when REPORT.md sits beside the run dir and when it lives at the
+    # strategy root (e.g. outputs/run1/equity_curves.png) — e.g. on GitHub.
+    out_dir = Path(out_path).resolve().parent
     images = {}
     for key, fname in [("equity", "equity_curves.png"), ("drawdown", "drawdown.png"),
                        ("regime", "regime_timeline.png"), ("signals", "signals.png"),
                        ("weights", "weights_s3_rotation.png")]:
         if (run_dir / fname).exists():
-            images[key] = fname
+            images[key] = os.path.relpath((run_dir / fname).resolve(), out_dir)
     return build_report(info["report_info"], metrics, images, manifest, out_path)
