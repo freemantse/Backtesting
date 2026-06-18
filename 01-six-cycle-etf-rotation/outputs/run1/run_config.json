@@ -1,0 +1,201 @@
+{
+  "config": {
+    "dates": {
+      "start": "2016-06-01",
+      "end": "2025-12-31"
+    },
+    "universe": {
+      "growth": "QQQ",
+      "quality": "COWZ",
+      "value": "SCHD",
+      "gold": "GLD",
+      "commodity": "DBB",
+      "bond": "TLT",
+      "benchmark": "SPY"
+    },
+    "inception": {
+      "QQQ": "1999-03-10",
+      "IWF": "2000-05-26",
+      "COWZ": "2016-05-16",
+      "SCHD": "2011-10-20",
+      "SPHD": "2012-10-18",
+      "GLD": "2004-11-18",
+      "DBB": "2007-01-08",
+      "COPX": "2010-04-19",
+      "TLT": "2002-07-26",
+      "SPY": "1993-01-29",
+      "QUAL": "2013-07-18"
+    },
+    "splice_proxy": {
+      "COWZ": "QUAL"
+    },
+    "stage_baskets": {
+      "1": [
+        "growth",
+        "gold"
+      ],
+      "2": [
+        "growth",
+        "commodity"
+      ],
+      "3": [
+        "quality",
+        "commodity"
+      ],
+      "4": [
+        "quality",
+        "bond",
+        "commodity"
+      ],
+      "5": [
+        "value",
+        "bond",
+        "gold"
+      ],
+      "6": [
+        "value",
+        "bond",
+        "gold"
+      ]
+    },
+    "style_weights": {
+      "1": {
+        "growth": 0.7,
+        "quality": 0.3
+      },
+      "2": {
+        "growth": 0.7,
+        "quality": 0.3
+      },
+      "3": {
+        "quality": 0.7,
+        "growth": 0.15,
+        "value": 0.15
+      },
+      "4": {
+        "quality": 0.7,
+        "growth": 0.15,
+        "value": 0.15
+      },
+      "5": {
+        "value": 0.7,
+        "quality": 0.3
+      },
+      "6": {
+        "value": 0.7,
+        "quality": 0.3
+      }
+    },
+    "signals": {
+      "money_series": "DGS3MO",
+      "credit_series": "BUSLOANS",
+      "credit_spread_series": "BAMLH0A0HYM2",
+      "growth_series": "INDPRO",
+      "growth_signal": "indpro",
+      "cfnai_series": "CFNAI",
+      "riskfree_series": "DGS3MO",
+      "money_lookback_m": 3,
+      "money_deadband_bps": 5,
+      "credit_yoy_base_m": 12,
+      "credit_pulse_m": 3,
+      "growth_yoy_base_m": 12,
+      "growth_accel_m": 3,
+      "deadband_frac": 0.0,
+      "macro_lag_days": 21,
+      "clock_monotonic": false
+    },
+    "backtest": {
+      "rebalance": "M",
+      "exec_lag_days": 1,
+      "rp_lookback": 60,
+      "vol_floor_daily": 0.0001,
+      "annualization": 252
+    },
+    "target_vol": {
+      "target": 0.03,
+      "lookback": 60,
+      "max_leverage": 3.0,
+      "vol_floor_annual": 0.01
+    },
+    "costs": {
+      "commission_bps": 1.0,
+      "slippage_bps": 2.0,
+      "stamp_bps": 0.0
+    }
+  },
+  "report_info": {
+    "generated": "2026-06-16",
+    "effective_start": "2016-06-01",
+    "end": "2025-12-31",
+    "rebalance": "M",
+    "price_source": "tiingo",
+    "macro_source": "fred",
+    "growth_signal": "indpro",
+    "macro_lag_days": 21,
+    "universe": {
+      "growth": "QQQ",
+      "quality": "COWZ",
+      "value": "SCHD",
+      "gold": "GLD",
+      "commodity": "DBB",
+      "bond": "TLT",
+      "benchmark": "SPY"
+    },
+    "stage_baskets": {
+      "1": [
+        "growth",
+        "gold"
+      ],
+      "2": [
+        "growth",
+        "commodity"
+      ],
+      "3": [
+        "quality",
+        "commodity"
+      ],
+      "4": [
+        "quality",
+        "bond",
+        "commodity"
+      ],
+      "5": [
+        "value",
+        "bond",
+        "gold"
+      ],
+      "6": [
+        "value",
+        "bond",
+        "gold"
+      ]
+    },
+    "rp_lookback": 60,
+    "target_vol": 0.03,
+    "max_leverage": 3.0,
+    "commission_bps": 1.0,
+    "slippage_bps": 2.0,
+    "splice_note": "real-instrument data, no synthetic splice",
+    "label_map": {
+      "s1_style": "S1 Style Rotation",
+      "s2_allweather": "S2 All-Weather",
+      "s3_rotation": "S3 Rotation",
+      "s4_targetvol": "S4 Target-Vol",
+      "ew": "EW Benchmark",
+      "spy": "SPY (Buy & Hold)"
+    },
+    "regime_mix": "S1 13%, S2 21%, S3 14%, S4 16%, S5 24%, S6 12%",
+    "s3_sharpe": "0.43",
+    "run_config_file": "run_config.json",
+    "data_provenance": "live fetch \u2014 prices: tiingo, macro: fred"
+  },
+  "price_source": "tiingo",
+  "macro_source": "fred",
+  "strategies": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ],
+  "on_missing_history": "clamp"
+}

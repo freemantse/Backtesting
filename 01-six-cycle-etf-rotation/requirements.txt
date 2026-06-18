@@ -1,0 +1,14 @@
+# Core (required)
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+scipy>=1.10
+PyYAML>=6.0
+
+# Data connectors (optional — imported lazily; the offline CSV path runs without them)
+# Tiingo for adjusted ETF prices (free key at https://www.tiingo.com)
+tiingo>=0.14 ; python_version >= "3.9"
+# FRED point-in-time macro (free key at https://fred.stlouisfed.org/docs/api/api_key.html)
+fredapi>=0.5
+# Stooq free cross-check (no key required)
+pandas-datareader>=0.10

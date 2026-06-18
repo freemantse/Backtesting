@@ -1,0 +1,100 @@
+# Six-Cycle US-analog backtester — default configuration.
+# Single source of truth for the universe, signal parameters, costs and dates.
+# Every value here is overridable from the CLI.
+
+dates:
+  start: "2016-06-01"      # default = COWZ inception (clean, real-instrument data, no synthetic splice)
+  end: "2025-12-31"
+
+# ----------------------------------------------------------------------------
+# Universe: each "leg" maps to a US ETF. Alternatives noted in comments.
+# ----------------------------------------------------------------------------
+universe:
+  growth:    QQQ           # alt: IWF
+  quality:   COWZ          # free-cash-flow ETF
+  value:     SCHD          # alt: SPHD
+  gold:      GLD
+  commodity: DBB           # alt: COPX
+  bond:      TLT           # 30Y Treasury
+  benchmark: SPY           # US analog of CSI 800
+
+# Approximate ETF inception dates (used to detect missing history / splicing).
+inception:
+  QQQ:  "1999-03-10"
+  IWF:  "2000-05-26"
+  COWZ: "2016-05-16"
+  SCHD: "2011-10-20"
+  SPHD: "2012-10-18"
+  GLD:  "2004-11-18"
+  DBB:  "2007-01-08"
+  COPX: "2010-04-19"
+  TLT:  "2002-07-26"
+  SPY:  "1993-01-29"
+  QUAL: "2013-07-18"       # quality proxy used to splice COWZ pre-2016 when --on-missing-history proxy
+
+# Proxy used to extend a leg before its ETF existed (return-splice).
+splice_proxy:
+  COWZ: QUAL
+
+# ----------------------------------------------------------------------------
+# Stage -> basket of legs (paper Figure 5, US analog).
+# ----------------------------------------------------------------------------
+stage_baskets:
+  1: [growth, gold]                 # Credit Expansion
+  2: [growth, commodity]            # Economic Recovery
+  3: [quality, commodity]           # Monetary Retreat
+  4: [quality, bond, commodity]     # Credit Retreat
+  5: [value, bond, gold]            # Economic Slowdown
+  6: [value, bond, gold]            # Monetary Expansion
+
+# Strategy 1 (Style Rotation) explicit style blends by stage (brief 1.3).
+style_weights:
+  1: {growth: 0.70, quality: 0.30}
+  2: {growth: 0.70, quality: 0.30}
+  3: {quality: 0.70, growth: 0.15, value: 0.15}
+  4: {quality: 0.70, growth: 0.15, value: 0.15}
+  5: {value: 0.70, quality: 0.30}
+  6: {value: 0.70, quality: 0.30}
+
+# ----------------------------------------------------------------------------
+# Macro signals (FRED series ids) and classifier parameters.
+# ----------------------------------------------------------------------------
+signals:
+  money_series: DGS3MO            # alt: FEDFUNDS, DGS2
+  credit_series: BUSLOANS         # C&I loans (loan-pulse base)
+  credit_spread_series: BAMLH0A0HYM2   # HY OAS (corroborator / tie-break)
+  growth_series: INDPRO           # industrial production (growth proxy); alt: CFNAI
+  growth_signal: indpro           # {indpro, cfnai}
+  cfnai_series: CFNAI
+  riskfree_series: DGS3MO
+
+  money_lookback_m: 3             # months for short-rate change
+  money_deadband_bps: 5           # |change| below this -> carry prior state (hysteresis)
+  credit_yoy_base_m: 12           # YoY base for loan growth
+  credit_pulse_m: 3               # months for loan-pulse change
+  growth_yoy_base_m: 12
+  growth_accel_m: 3               # months for YoY acceleration
+  deadband_frac: 0.0              # generic deadband as fraction (0 = sign only)
+  macro_lag_days: 21              # publication lag applied to monthly signals (point-in-time)
+  clock_monotonic: false          # restrict stage moves to adjacent clock stages (min-dwell 1)
+
+# ----------------------------------------------------------------------------
+# Backtest mechanics.
+# ----------------------------------------------------------------------------
+backtest:
+  rebalance: "M"        # M = monthly (paper), W = weekly (AxiomQ)
+  exec_lag_days: 1      # weights effective next trading day (leakage-free)
+  rp_lookback: 60       # trading days for inverse-vol risk parity
+  vol_floor_daily: 0.0001
+  annualization: 252
+
+target_vol:
+  target: 0.03          # 3% annualized vol target (S4)
+  lookback: 60          # trading days for trailing realized vol
+  max_leverage: 3.0
+  vol_floor_annual: 0.01
+
+costs:
+  commission_bps: 1.0
+  slippage_bps: 2.0
+  stamp_bps: 0.0        # no stamp duty in the US

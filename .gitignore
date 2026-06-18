@@ -1,0 +1,29 @@
+# Python
+**/__pycache__/
+*.pyc
+**/.pytest_cache/
+**/*.egg-info/
+
+# OS
+.DS_Store
+
+# Local secrets — never commit (keep .env.example as the template):
+**/.env.local
+**/.env
+!**/.env.example
+
+# Data cache (downloaded live data)
+**/data/cache/
+
+# Backtest runs are excluded by default, BUT the reference run is kept so the
+# repo renders charts + report on GitHub out-of-the-box. (Exclude the *contents*
+# of outputs/, not the dir itself, so the run1 re-include can take effect.)
+**/outputs/*
+!**/outputs/run1/
+
+# Keep the offline snapshots so the repo runs keyless out-of-the-box:
+!**/data/offline/
+
+# Design docs (un-ignore if you want them public):
+**/PLAN.md
+**/six_cycle_backtest_brief.md
