@@ -6,7 +6,7 @@ produce them. New strategies are added as new numbered folders.
 
 ---
 
-## 👉 Start here (for reviewers)
+## 👉 Start here 
 
 **You don't need to install anything.** Pick a strategy from the table below and click its
 **Report** link — it opens right here on GitHub, with the charts and results already rendered on the
