@@ -42,7 +42,7 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="write data/offline/{prices,macro}.csv for the no-key path")
 
     # run -----------------------------------------------------------------
-    r = sub.add_parser("run", help="run the backtest and write artifacts + REPORT.md")
+    r = sub.add_parser("run", help="run the backtest and write artifacts + REPORT_US.md")
     _add_common(r)
     r.add_argument("--strategies", default="s1,s2,s3,s4",
                    help="comma list of s1,s2,s3,s4 (benchmarks ew+spy always run)")
@@ -66,7 +66,7 @@ def _build_parser() -> argparse.ArgumentParser:
     mono.add_argument("--no-clock-monotonic", dest="clock_monotonic", action="store_false")
     r.add_argument("--on-missing-history", default="clamp", choices=["clamp", "proxy"])
     r.add_argument("--out-dir", default=None)
-    r.add_argument("--report", default=None, help="path for the root REPORT.md (default ./REPORT.md)")
+    r.add_argument("--report", default=None, help="path for the root US-market report (default ./REPORT_US.md)")
 
     # report --------------------------------------------------------------
     rep = sub.add_parser("report", help="rebuild REPORT.md from a run directory")
@@ -119,7 +119,7 @@ def cmd_run(args) -> None:
     strategies = [s.strip().lower() for s in args.strategies.split(",") if s.strip()]
     ts = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir = Path(args.out_dir) if args.out_dir else (REPO_ROOT / "outputs" / f"run_{ts}")
-    report_path = Path(args.report) if args.report else (REPO_ROOT / "REPORT.md")
+    report_path = Path(args.report) if args.report else (REPO_ROOT / "REPORT_US.md")
 
     res = run_all(cfg, args.source, args.macro_source, strategies,
                   args.on_missing_history, out_dir, report_path)

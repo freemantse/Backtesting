@@ -1,7 +1,7 @@
 """End-to-end run orchestration: data -> classify -> backtest -> report.
 
 Used by the CLI `run` subcommand. Produces all artifacts in an output dir and a
-comprehensive REPORT.md at the project root.
+comprehensive REPORT_US.md at the project root.
 """
 from __future__ import annotations
 

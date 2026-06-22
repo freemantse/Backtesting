@@ -14,11 +14,12 @@ page.
 
 ## Strategies
 
-| # | Strategy | Idea in one line | Report | Status |
-|---|----------|------------------|--------|--------|
-| 1 | **Six-Cycle ETF Rotation** | Rotate U.S. ETFs based on which phase the economy is in | [Read the report](01-six-cycle-etf-rotation/REPORT.md) | ✅ Done |
+| # | Strategy | Idea in one line | Reports | Status |
+|---|----------|------------------|---------|--------|
+| 1 | **Six-Cycle Rotation** | Rotate assets based on which phase the economy is in | 🇺🇸 [US market](01-six-cycle-etf-rotation/REPORT_US.md) · 🇨🇳 [China market](01-six-cycle-etf-rotation/PLAN.md) | US ✅ Done · China 🚧 Pending data |
 
-> *(One row is added here per strategy. The Report link is always the fastest way to the right place.)*
+> *(One row per strategy; a strategy may carry more than one market report. The Report link is always the fastest way to the right place.)*
+> *🇨🇳 The China-market report (`REPORT_CHINA.md`) is in progress — pending the LSEG data hand-off; the link above points to its plan for now.*
 
 ## How to read a strategy report
 

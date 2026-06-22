@@ -7,7 +7,7 @@ date macro data, then made available only after a publication lag, so the label
 on day T uses only information knowable by T.
 
 The 8 -> 6 mapping table is a DOCUMENTED ASSUMPTION (the paper omits it),
-grounded in the monetary -> credit -> growth lead-lag chain. See REPORT.md.
+grounded in the monetary -> credit -> growth lead-lag chain. See REPORT_US.md.
 """
 from __future__ import annotations
 

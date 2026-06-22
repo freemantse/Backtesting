@@ -5,7 +5,8 @@ recovering growth, tightening, contracting, slowing). This strategy tries to hol
 tend to do best in *whichever phase the economy is currently in*, and rotates as the phase changes.
 We test four variants against simple benchmarks (an equal-weight basket and buy-and-hold S&P 500).
 
-**📄 [Read the full report → REPORT.md](REPORT.md)** — context, methodology, results, and caveats.
+**📄 [Read the full US-market report → REPORT_US.md](REPORT_US.md)** — context, methodology, results, and caveats.
+*(A China-market reproduction — `REPORT_CHINA.md` — is planned; see [`PLAN.md`](PLAN.md). Pending LSEG data.)*
 
 ### How a $1 investment would have grown
 
@@ -23,7 +24,7 @@ We test four variants against simple benchmarks (an equal-weight basket and buy-
 | *Benchmark: SPY (S&P 500)* | 15.1% | 18.1% | 0.74 | -33.7% | 0.45 |
 
 *CAGR = annual return · Sharpe = return per unit of risk (higher is better) · MaxDD = worst
-peak-to-trough drop (smaller is better). Full table and interpretation in the [report](REPORT.md).*
+peak-to-trough drop (smaller is better). Full table and interpretation in the [US-market report](REPORT_US.md).*
 
 ### Want to run it yourself? (optional — no API keys needed)
 
@@ -52,7 +53,7 @@ Guosheng Securities **“Six-Cycle Framework”** multi-asset ETF rotation paper
 - **Growth signal:** free FRED proxy (INDPRO YoY acceleration, or CFNAI).
 - **Strategies:** S1 Style Rotation · S2 All-Weather · S3 Six-Cycle Rotation · S4 Target-Vol · benchmarks (EW, SPY).
 
-See [`PLAN.md`](PLAN.md) for the design and [`REPORT.md`](REPORT.md) for the full write-up + results.
+See [`PLAN.md`](PLAN.md) for the design and [`REPORT_US.md`](REPORT_US.md) for the full US-market write-up + results.
 
 ---
 
@@ -100,7 +101,7 @@ python -m sixcycle.cli fetch-data --source stooq --macro-source fred --save-offl
 ```bash
 python -m sixcycle.cli run --strategies s1,s2,s3,s4 --out-dir outputs/run1
 ```
-Writes all artifacts to `outputs/run1/` and a comprehensive `REPORT.md` at the
+Writes all artifacts to `outputs/run1/` and a comprehensive `REPORT_US.md` at the
 project root.
 
 ### 3. (Re)build the report from a run
