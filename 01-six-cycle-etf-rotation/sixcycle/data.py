@@ -31,6 +31,10 @@ def make_price_source(name: str) -> PriceSource:
         from .datasources.csv_source import CsvPriceSource
 
         return CsvPriceSource()
+    if name == "csvdir":
+        from .datasources.csv_source import CsvDirPriceSource
+
+        return CsvDirPriceSource()
     raise ValueError(f"unknown price source {name!r}")
 
 
@@ -44,6 +48,10 @@ def make_macro_source(name: str) -> MacroSource:
         from .datasources.csv_source import CsvMacroSource
 
         return CsvMacroSource()
+    if name == "csvdir":
+        from .datasources.csv_source import CsvDirMacroSource
+
+        return CsvDirMacroSource()
     raise ValueError(f"unknown macro source {name!r}")
 
 

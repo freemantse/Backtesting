@@ -35,8 +35,8 @@ def _build_parser() -> argparse.ArgumentParser:
     # fetch-data ----------------------------------------------------------
     f = sub.add_parser("fetch-data", help="download + cache prices and macro")
     _add_common(f)
-    f.add_argument("--source", default="tiingo", choices=["tiingo", "stooq", "csv"])
-    f.add_argument("--macro-source", default="fred", choices=["fred", "csv"])
+    f.add_argument("--source", default="tiingo", choices=["tiingo", "stooq", "csv", "csvdir"])
+    f.add_argument("--macro-source", default="fred", choices=["fred", "csv", "csvdir"])
     f.add_argument("--on-missing-history", default="clamp", choices=["clamp", "proxy"])
     f.add_argument("--save-offline", action="store_true",
                    help="write data/offline/{prices,macro}.csv for the no-key path")
@@ -46,8 +46,8 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_common(r)
     r.add_argument("--strategies", default="s1,s2,s3,s4",
                    help="comma list of s1,s2,s3,s4 (benchmarks ew+spy always run)")
-    r.add_argument("--source", default="tiingo", choices=["tiingo", "stooq", "csv"])
-    r.add_argument("--macro-source", default="fred", choices=["fred", "csv"])
+    r.add_argument("--source", default="tiingo", choices=["tiingo", "stooq", "csv", "csvdir"])
+    r.add_argument("--macro-source", default="fred", choices=["fred", "csv", "csvdir"])
     r.add_argument("--rebalance", default=None, choices=["M", "W"])
     r.add_argument("--growth-signal", default=None, choices=["indpro", "cfnai"])
     r.add_argument("--money-signal", default=None, choices=["DGS3MO", "FEDFUNDS", "DGS2"])
