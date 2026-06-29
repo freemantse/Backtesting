@@ -16,10 +16,10 @@ page.
 
 | # | Strategy | Idea in one line | Reports | Status |
 |---|----------|------------------|---------|--------|
-| 1 | **Six-Cycle Rotation** | Rotate assets based on which phase the economy is in | 🇺🇸 [US market](01-six-cycle-etf-rotation/REPORT_US.md) · 🇨🇳 [China market](01-six-cycle-etf-rotation/PLAN.md) | US ✅ Done · China 🚧 Pending data |
+| 1 | **Six-Cycle Rotation** | Rotate assets based on which phase the economy is in | 🇺🇸 [US market](01-six-cycle-etf-rotation/REPORT_US.md) · 🇨🇳 [China market](01-six-cycle-etf-rotation/REPORT_CHINA.md) | US ✅ Done · China ✅ Done |
 
 > *(One row per strategy; a strategy may carry more than one market report. The Report link is always the fastest way to the right place.)*
-> *🇨🇳 The China-market report (`REPORT_CHINA.md`) is in progress — pending the LSEG data hand-off; the link above points to its plan for now.*
+> *Across both the 🇺🇸 US and 🇨🇳 China markets, the main rotation strategy roughly matched — and slightly trailed — a simple equal-weight of the same assets: the cycle-timing overlay added little. See each report for the full results and caveats.*
 
 ## How to read a strategy report
 
