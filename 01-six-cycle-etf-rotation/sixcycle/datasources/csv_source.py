@@ -25,11 +25,15 @@ CHINA_DIR = REPO_ROOT / "data" / "China"
 # (CNI/CSI) rather than the numeric code, so the mapping is explicit rather than glob-able.
 # Produced by scripts/convert_lseg_xlsx.py. A plain ``<code>.csv`` is also accepted.
 CHINA_SERIES_FILES = {
-    "159915": "Growth_159915.csv",       # E Fund ChiNext ETF
-    "518880": "Gold_518880.csv",         # Hua An YiFu Gold ETF
-    "980092": "FreeCashFlow_CNI.csv",    # CNI Free Cash Flow index
-    "H30269": "DividendLowVol_CSI.csv",  # CSI Dividend Low-Vol index
-    "NBS_PMI": "PMI_NBS.csv",            # NBS Manufacturing PMI (first-release)
+    "159915": "Growth_159915.csv",            # E Fund ChiNext ETF            (LSEG)
+    "518880": "Gold_518880.csv",              # Hua An YiFu Gold ETF          (LSEG)
+    "980092": "FreeCashFlow_CNI.csv",         # CNI Free Cash Flow index      (LSEG)
+    "H30269": "DividendLowVol_CSI.csv",       # CSI Dividend Low-Vol index    (LSEG)
+    "CBA21801": "Bond_ChinaBond30Y.csv",      # ChinaBond 30Y Treasury TR idx (Wind)
+    "IMCI": "Commodity_SHFENonferrous.csv",   # SHFE non-ferrous metals index (Wind)
+    "NBS_PMI": "PMI_NBS.csv",                 # NBS Manufacturing PMI         (LSEG, first-release)
+    "FDR007": "Money_FDR007.csv",             # depository-institution 7d repo (AkShare; DR007 proxy)
+    "NewLoans": "Credit_NewLoans.csv",        # monthly new-credit flow        (AkShare; MLT/TSF proxy)
 }
 
 

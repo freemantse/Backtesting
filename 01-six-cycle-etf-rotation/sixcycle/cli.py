@@ -49,7 +49,7 @@ def _build_parser() -> argparse.ArgumentParser:
     r.add_argument("--source", default="tiingo", choices=["tiingo", "stooq", "csv", "csvdir"])
     r.add_argument("--macro-source", default="fred", choices=["fred", "csv", "csvdir"])
     r.add_argument("--rebalance", default=None, choices=["M", "W"])
-    r.add_argument("--growth-signal", default=None, choices=["indpro", "cfnai"])
+    r.add_argument("--growth-signal", default=None, choices=["indpro", "cfnai", "pmi"])
     r.add_argument("--money-signal", default=None, choices=["DGS3MO", "FEDFUNDS", "DGS2"])
     r.add_argument("--growth-etf", default=None)
     r.add_argument("--value-etf", default=None)

@@ -1,0 +1,92 @@
+# Six-Cycle CHINA reproduction — configuration.
+# Same model as default.yaml (US analog); only the universe (China instrument codes) and the
+# macro signal series differ. The model/engine layer (classifier, risk-parity, strategies,
+# backtest, metrics) is shared and unchanged.
+#
+# Run (offline, from the committed CSV snapshots in data/China/):
+#   sixcycle run --config configs/china.yaml --source csvdir --macro-source csvdir \
+#                --strategies s1,s2,s3,s4,ew --out-dir outputs/run_china
+
+dates:
+  start: "2014-01-01"
+  end: "2025-10-31"        # ~11.4 yrs (paper window)
+
+# ----------------------------------------------------------------------------
+# Universe: each leg -> a China instrument code. Codes resolve to per-series CSVs
+# in data/China/ via CHINA_SERIES_FILES (sixcycle/datasources/csv_source.py).
+# No single-ticker benchmark — China uses the equal-weight (EW) of the legs.
+# ----------------------------------------------------------------------------
+universe:
+  growth:    "159915"      # ChiNext / GEM ETF (E Fund)            — LSEG
+  quality:   "980092"      # CNI Free Cash Flow index              — LSEG
+  value:     "H30269"      # CSI Dividend Low-Volatility index     — LSEG
+  gold:      "518880"      # Hua An gold ETF                       — LSEG
+  commodity: "IMCI"        # SHFE non-ferrous metals index         — Wind
+  bond:      "CBA21801"    # ChinaBond 30Y Treasury wealth (TR) idx — Wind
+
+inception: {}              # all six legs have full ~2014 history; no clamp/splice needed
+splice_proxy: {}           # Quality/Value run index-only (ETFs not delivered)
+
+# Stage -> basket of legs (paper Figure 5) — identical to the US analog (leg names are abstract).
+stage_baskets:
+  1: [growth, gold]                 # Credit Expansion
+  2: [growth, commodity]            # Economic Recovery
+  3: [quality, commodity]           # Monetary Retreat
+  4: [quality, bond, commodity]     # Credit Retreat
+  5: [value, bond, gold]            # Economic Slowdown
+  6: [value, bond, gold]            # Monetary Expansion
+
+# Strategy 1 (Style Rotation) explicit style blends by stage (paper 1.3).
+style_weights:
+  1: {growth: 0.70, quality: 0.30}
+  2: {growth: 0.70, quality: 0.30}
+  3: {quality: 0.70, growth: 0.15, value: 0.15}
+  4: {quality: 0.70, growth: 0.15, value: 0.15}
+  5: {value: 0.70, quality: 0.30}
+  6: {value: 0.70, quality: 0.30}
+
+# ----------------------------------------------------------------------------
+# Macro signals (China series ids) and classifier parameters.
+#   Money  = FDR007 (depository-institution 7-day repo fixing; DR007 proxy — Wind DR007 not entitled)
+#   Credit = new-credit monthly flow (新增信贷; MLT/TSF proxy) — TTM-rolled in the classifier
+#   Growth = NBS Manufacturing PMI (first-release), level vs 50
+# ----------------------------------------------------------------------------
+signals:
+  money_series: FDR007
+  credit_series: NewLoans
+  credit_is_flow: true            # TTM-roll the monthly flow before YoY (it's a flow, not a stock)
+  growth_series: NBS_PMI
+  growth_signal: pmi              # PMI level vs 50 (+ deadband)
+  pmi_neutral: 50.0
+  pmi_deadband: 0.0
+  riskfree_series: FDR007
+  # (no credit_spread_series — China has no HY-OAS analog; tie-break falls back to prior state)
+
+  money_lookback_m: 3
+  money_deadband_bps: 5
+  credit_yoy_base_m: 12
+  credit_pulse_m: 3
+  deadband_frac: 0.0
+  macro_lag_days: 21              # conservative uniform publication lag (point-in-time, leakage-free)
+  clock_monotonic: false
+
+# ----------------------------------------------------------------------------
+# Backtest mechanics.
+# ----------------------------------------------------------------------------
+backtest:
+  rebalance: "M"        # monthly with the regime (paper)
+  exec_lag_days: 1
+  rp_lookback: 60
+  vol_floor_daily: 0.0001
+  annualization: 252
+
+target_vol:
+  target: 0.03
+  lookback: 60
+  max_leverage: 3.0
+  vol_floor_annual: 0.01
+
+costs:
+  commission_bps: 1.0
+  slippage_bps: 2.0
+  stamp_bps: 0.0        # ETFs are stamp-duty-exempt in China (per brief)

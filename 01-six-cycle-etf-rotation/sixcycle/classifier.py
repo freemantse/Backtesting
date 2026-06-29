@@ -85,10 +85,19 @@ def _money_signal(macro: dict[str, pd.Series], sig: dict[str, Any]) -> tuple[pd.
 
 def _credit_signal(macro: dict[str, pd.Series], sig: dict[str, Any]) -> tuple[pd.Series, pd.Series]:
     loans = _month_end(macro[sig["credit_series"]])
+    if sig.get("credit_is_flow", False):
+        # A monthly FLOW (e.g. China new-credit): TTM-roll to a 12-month sum first so the
+        # YoY is on a stock-like base (suppresses seasonality / single-month noise & negatives).
+        loans = loans.rolling(12).sum()
     yoy = loans / loans.shift(sig["credit_yoy_base_m"]) - 1.0
     pulse = yoy - yoy.shift(sig["credit_pulse_m"])
-    oas = _month_end(macro[sig["credit_spread_series"]])
-    oas_change = oas - oas.shift(sig["credit_pulse_m"])
+    # Optional HY-spread tie-break (US only); absent for China -> hold prior state on ties.
+    spread_id = sig.get("credit_spread_series")
+    has_spread = spread_id in macro if spread_id else False
+    oas_change = None
+    if has_spread:
+        oas = _month_end(macro[spread_id])
+        oas_change = oas - oas.shift(sig["credit_pulse_m"])
     db = sig.get("deadband_frac", 0.0)
     state = pd.Series(index=pulse.index, dtype=float)
     prev = np.nan
@@ -98,12 +107,14 @@ def _credit_signal(macro: dict[str, pd.Series], sig: dict[str, Any]) -> tuple[pd
             s = 1.0
         elif not pd.isna(p) and p < -db:
             s = -1.0
-        else:  # tie-break on HY spread: falling spread => credit expansion
+        elif oas_change is not None:  # tie-break on HY spread: falling spread => credit expansion
             oc = oas_change.get(date, np.nan)
             if pd.isna(oc):
                 s = prev
             else:
                 s = 1.0 if oc < 0 else (-1.0 if oc > 0 else prev)
+        else:  # no spread series -> carry prior decided state
+            s = prev
         state[date] = s
         if not pd.isna(s):
             prev = s
@@ -112,6 +123,14 @@ def _credit_signal(macro: dict[str, pd.Series], sig: dict[str, Any]) -> tuple[pd
 
 def _growth_signal(macro: dict[str, pd.Series], sig: dict[str, Any]) -> tuple[pd.Series, pd.Series]:
     which = sig.get("growth_signal", "indpro").lower()
+    if which == "pmi":
+        # PMI level vs the neutral line (50): >50 = expansion (+1), <50 = contraction (-1).
+        # A diffusion index, so the level itself is the momentum signal (no YoY needed).
+        pmi = _month_end(macro[sig["growth_series"]])
+        neutral = sig.get("pmi_neutral", 50.0)
+        metric = pmi - neutral
+        state = _state_with_hysteresis(metric, sig.get("pmi_deadband", 0.0))
+        return state, metric.rename("growth_pmi_vs50")
     if which == "cfnai":
         cfnai = _month_end(macro[sig["cfnai_series"]])
         metric = cfnai.rolling(3).mean()

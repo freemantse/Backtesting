@@ -43,6 +43,14 @@ PRICE_FILES = [
 ]
 PMI_FILE = "PMI_NBS.xlsx"
 
+# Wind Financial Terminal exports are FLAT tables (header on row 1, newest-first,
+# sometimes a trailing "Source: Wind" footer; commodity values carry thousands commas).
+# Matched by a substring of the (dated) filename so re-pulls still resolve.
+WIND_SPECS = [
+    {"match": "CBA21801", "out": "Bond_ChinaBond30Y.csv", "close": "Close"},          # ChinaBond 30Y TR
+    {"match": "IMCI", "out": "Commodity_SHFENonferrous.csv", "close": "Closing Price"},  # SHFE non-ferrous
+]
+
 EXCEL_EPOCH = pd.Timestamp("1899-12-30")  # Excel serial-date origin
 
 
@@ -121,6 +129,34 @@ def convert_pmi(path: Path) -> pd.DataFrame:
     return df
 
 
+def convert_wind(path: Path, close_header: str) -> pd.DataFrame:
+    """Extract Trading Date + <close_header> from a flat Wind 'History Price' export."""
+    ws = load_workbook(path, read_only=True, data_only=True).worksheets[0]
+    rows = list(ws.iter_rows(values_only=True))
+    if not rows:
+        raise ValueError(f"{path.name}: empty sheet")
+    header = [str(c).strip() if c is not None else "" for c in rows[0]]
+    if "Trading Date" not in header or close_header not in header:
+        raise ValueError(
+            f"{path.name}: missing 'Trading Date'/'{close_header}' header; got {header[:6]}"
+        )
+    dcol, ccol = header.index("Trading Date"), header.index(close_header)
+
+    recs = []
+    for row in rows[1:]:
+        d = _to_date(row[dcol])
+        raw = row[ccol]
+        if isinstance(raw, str):
+            raw = raw.replace(",", "").strip()  # commodity values like "4,610.69"
+        c = pd.to_numeric(raw, errors="coerce")
+        if d is None or pd.isna(d) or pd.isna(c):
+            continue  # 'Source: Wind' footer / blank — never zero-fill
+        recs.append((d, float(c)))
+
+    df = pd.DataFrame(recs, columns=["date", "close"])
+    return df.drop_duplicates(subset="date").sort_values("date").reset_index(drop=True)
+
+
 def _coverage(df: pd.DataFrame, date_col: str) -> str:
     dates = pd.to_datetime(df[date_col])
     gaps = int((dates.diff().dt.days.fillna(0) > 7).sum())  # holes > 1 week
@@ -164,6 +200,26 @@ def main() -> int:
             print(f"[warn] {PMI_FILE}: no PMI rows extracted")
     else:
         print(f"[skip] {PMI_FILE}: not delivered yet")
+
+    # Wind exports (Bond, Commodity) — flat tables; remove the source xlsx after
+    # a clean write so data/China/ stays CSV-only (same convention as the LSEG files).
+    for spec in WIND_SPECS:
+        matches = sorted(p for p in src.glob("*.xlsx") if spec["match"] in p.name)
+        if not matches:
+            print(f"[skip] Wind {spec['match']}: no .xlsx found in {src}")
+            continue
+        path = matches[-1]
+        df = convert_wind(path, spec["close"])
+        if df.empty:
+            print(f"[warn] {path.name}: no data rows extracted — skipping")
+            continue
+        dst = out / spec["out"]
+        df.to_csv(dst, index=False)
+        print(f"[ok]   {path.name:<42} -> {dst.name:<28} {_coverage(df, 'date')}")
+        written.append(dst)
+        if dst.exists() and dst.stat().st_size > 0:
+            path.unlink()
+            print(f"       removed source {path.name} (CSV-only)")
 
     if not written:
         print("[error] no workbooks converted — is the source directory correct?",

@@ -155,14 +155,17 @@ def load(
     # --- macro series ----------------------------------------------------
     msrc = make_macro_source(macro_source)
     sig = cfg.signals
+    # Only the series the active config references (China omits the HY-spread and CFNAI
+    # series, so use .get and drop the absent ones rather than KeyError).
     wanted = {
-        sig["money_series"],
-        sig["credit_series"],
-        sig["credit_spread_series"],
-        sig["growth_series"],
-        sig.get("cfnai_series", "CFNAI"),
-        sig["riskfree_series"],
+        sig.get("money_series"),
+        sig.get("credit_series"),
+        sig.get("credit_spread_series"),
+        sig.get("growth_series"),
+        sig.get("cfnai_series"),
+        sig.get("riskfree_series"),
     }
+    wanted.discard(None)
     macro: dict[str, pd.Series] = {}
     macro_start = "2000-01-01"  # need history for YoY/lookbacks before backtest start
     for sid in sorted(wanted):

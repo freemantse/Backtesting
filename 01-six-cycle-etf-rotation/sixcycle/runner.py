@@ -52,7 +52,11 @@ def run_all(cfg: Config, price_source: str, macro_source: str,
     else:
         data_provenance = f"live fetch — prices: {price_source}, macro: {macro_source}"
     prices = data.prices
-    returns = prices.pct_change()
+    # Hold a leg's price across days it doesn't trade (legs span different exchange/interbank
+    # calendars — the China bond index trades ~85 days/yr the equity legs don't), so a
+    # non-trading leg earns 0 that day and the move is captured on resume. Explicit ffill
+    # makes this intentional and silences pandas' pad-fill deprecation (numbers unchanged).
+    returns = prices.ffill().pct_change(fill_method=None)
     eff_start = data.effective_start
     end = cfg.dates["end"]
     target_index = returns.loc[eff_start:end].index
@@ -79,12 +83,15 @@ def run_all(cfg: Config, price_source: str, macro_source: str,
 
     # ---- run strategies --------------------------------------------------
     results: dict = {}
-    benchmark_ticker = universe.leg_to_ticker.get("benchmark", "SPY")
+    # A single-ticker buy-&-hold benchmark (e.g. SPY) only if the universe defines one;
+    # China has none and uses the equal-weight (EW) of the legs as its benchmark.
+    benchmark_ticker = universe.leg_to_ticker.get("benchmark")
 
-    # benchmarks always run (for win-rate + comparison)
     results["ew"] = run_backtest(EqualWeight(), **common)
-    spy_res = run_backtest(BuyHold(benchmark_ticker), **common)
-    results[benchmark_ticker.lower()] = spy_res
+    spy_res = None
+    if benchmark_ticker:
+        spy_res = run_backtest(BuyHold(benchmark_ticker), **common)
+        results[benchmark_ticker.lower()] = spy_res
 
     if "s1" in strategies:
         results["s1_style"] = run_backtest(StyleRotation(), **common)
@@ -101,11 +108,15 @@ def run_all(cfg: Config, price_source: str, macro_source: str,
         results["s4_targetvol"] = run_backtest(tv, **common)
 
     # order results sensibly
-    order = ["s1_style", "s2_allweather", "s3_rotation", "s4_targetvol", "ew", benchmark_ticker.lower()]
+    order = ["s1_style", "s2_allweather", "s3_rotation", "s4_targetvol", "ew"]
+    if benchmark_ticker:
+        order.append(benchmark_ticker.lower())
     results = {k: results[k] for k in order if k in results}
 
     # ---- metrics ---------------------------------------------------------
-    benchmarks = {"EW": results["ew"].returns, "SPY": spy_res.returns}
+    benchmarks = {"EW": results["ew"].returns}
+    if spy_res is not None:
+        benchmarks["SPY"] = spy_res.returns
     mtable = M.metrics_table(results, rf_daily, benchmarks, bt["annualization"])
 
     # ---- plots -----------------------------------------------------------
@@ -163,7 +174,8 @@ def run_all(cfg: Config, price_source: str, macro_source: str,
         "splice_note": ("real-instrument data, no synthetic splice"
                         if on_missing_history == "clamp"
                         else "extended pre-inception via documented proxy splice"),
-        "label_map": {**DISPLAY, benchmark_ticker.lower(): f"{benchmark_ticker} (Buy & Hold)"},
+        "label_map": ({**DISPLAY, benchmark_ticker.lower(): f"{benchmark_ticker} (Buy & Hold)"}
+                      if benchmark_ticker else dict(DISPLAY)),
         "regime_mix": regime_mix,
         "s3_sharpe": f"{s3_sharpe:.2f}" if s3_sharpe is not None and pd.notna(s3_sharpe) else "—",
         "run_config_file": "run_config.json",
